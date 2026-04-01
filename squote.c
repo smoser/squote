@@ -70,6 +70,10 @@ int quote_argv(int argc, char **argv, char *out, size_t outsz) {
 int main(int argc, char **argv) {
     char buf[BUFMAX];
     const char *passthrough = getenv("SQUOTE_PASSTHROUGH");
+    if (passthrough && strcmp(passthrough, "true") != 0 && strcmp(passthrough, "false") != 0) {
+        fprintf(stderr, "squote: SQUOTE_PASSTHROUGH must be 'true' or 'false', got '%s'\n", passthrough);
+        return 2;
+    }
     if (passthrough && strcmp(passthrough, "true") == 0) {
         if (argc < 2) return 0;
         if (quote_argv(argc - 1, argv + 1, buf, sizeof(buf)) < 0) {

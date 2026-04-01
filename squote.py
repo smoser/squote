@@ -31,7 +31,11 @@ VERSION = "0.1.0"
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    if os.environ.get("SQUOTE_PASSTHROUGH") == "true":
+    passthrough = os.environ.get("SQUOTE_PASSTHROUGH")
+    if passthrough is not None and passthrough not in ("true", "false"):
+        print(f"squote: SQUOTE_PASSTHROUGH must be 'true' or 'false', got '{passthrough}'", file=sys.stderr)
+        sys.exit(2)
+    if passthrough == "true":
         if args:
             print(quote_args(args))
     elif args and args[0] == "--version":

@@ -1,5 +1,12 @@
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
+    match std::env::var("SQUOTE_PASSTHROUGH").as_deref() {
+        Ok("true") | Ok("false") | Err(_) => {}
+        Ok(val) => {
+            eprintln!("squote: SQUOTE_PASSTHROUGH must be 'true' or 'false', got '{val}'");
+            std::process::exit(2);
+        }
+    }
     if std::env::var("SQUOTE_PASSTHROUGH").as_deref() == Ok("true") {
         let args_ref: Vec<&str> = args.iter().map(String::as_str).collect();
         if !args_ref.is_empty() {

@@ -12,6 +12,7 @@ squote_test: squote.c squote_test.c squote.h
 test: squote_test
 	./squote_test
 	python3 squote_test.py
+	cargo test
 
 clean:
 	rm -f squote squote_test

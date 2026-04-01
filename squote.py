@@ -5,7 +5,7 @@ _SAFE_BARE = frozenset(
     "abcdefghijklmnopqrstuvwxyz"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "0123456789"
-    "@%+=:,./-_"
+    "@+:,./-_"
 )
 
 _DOUBLE_QUOTE_SPECIAL = frozenset('"$`\\!')

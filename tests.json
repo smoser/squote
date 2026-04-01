@@ -1,0 +1,31 @@
+[
+  {"input": ["echo"],                  "want": "echo"},
+  {"input": ["foo@bar.com"],           "want": "foo@bar.com"},
+  {"input": ["/usr/bin/env"],          "want": "/usr/bin/env"},
+  {"input": ["key=value"],             "want": "'key=value'"},
+  {"input": ["some-flag_name"],        "want": "some-flag_name"},
+
+  {"input": ["hello world"],           "want": "'hello world'"},
+  {"input": ["say \"hi\""],            "want": "'say \"hi\"'"},
+  {"input": ["$HOME"],                 "want": "'$HOME'"},
+  {"input": ["`date`"],                "want": "'`date`'"},
+  {"input": ["C:\\path"],              "want": "'C:\\path'"},
+  {"input": ["hello!"],                "want": "'hello!'"},
+  {"input": ["$var and spaces"],       "want": "'$var and spaces'"},
+
+  {"input": ["howdy' partner"],        "want": "\"howdy' partner\""},
+  {"input": ["it's a \"test\""],       "want": "\"it's a \\\"test\\\"\""},
+  {"input": ["it's"],                  "want": "\"it's\""},
+  {"input": ["it's rockin'"],          "want": "\"it's rockin'\""},
+
+  {"input": ["it's $HOME"],            "want": "\"it's \\$HOME\""},
+  {"input": ["it's `date`"],           "want": "\"it's \\`date\\`\""},
+  {"input": ["it's C:\\path"],         "want": "\"it's C:\\\\path\""},
+  {"input": ["it's great!"],           "want": "\"it's great\\!\""},
+
+  {"input": [""],                      "want": "''"},
+
+  {"input": ["echo", "hello", "world"],       "want": "echo hello world"},
+  {"input": ["echo", "hello world"],          "want": "echo 'hello world'"},
+  {"input": ["echo", "howdy' partner"],       "want": "echo \"howdy' partner\""}
+]

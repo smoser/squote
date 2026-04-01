@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "squote.h"
 
@@ -63,9 +64,33 @@ int quote_argv(int argc, char **argv, char *out, size_t outsz) {
     return 0;
 }
 
+#define VERSION "0.1.0"
+
 #ifndef NO_MAIN
 int main(int argc, char **argv) {
     char buf[BUFMAX];
+    const char *passthrough = getenv("SQUOTE_PASSTHROUGH");
+    if (passthrough && strcmp(passthrough, "true") == 0) {
+        if (argc < 2) return 0;
+        if (quote_argv(argc - 1, argv + 1, buf, sizeof(buf)) < 0) {
+            fprintf(stderr, "squote: arguments too long\n");
+            return 1;
+        }
+        puts(buf);
+        return 0;
+    }
+    if (argc >= 2 && strcmp(argv[1], "--version") == 0) {
+        puts("squote " VERSION);
+        return 0;
+    }
+    if (argc >= 2 && strcmp(argv[1], "--help") == 0) {
+        puts("Usage: squote [--help] [--version] [--] [ARG...]\n"
+             "Quote ARGs for safe copy/paste into a shell.");
+        return 0;
+    }
+    if (argc >= 2 && strcmp(argv[1], "--") == 0) {
+        argv++; argc--;
+    }
     if (argc < 2) return 0;
     if (quote_argv(argc - 1, argv + 1, buf, sizeof(buf)) < 0) {
         fprintf(stderr, "squote: arguments too long\n");

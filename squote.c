@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "squote.h"
 
 #define BUFMAX 65536
 
@@ -52,7 +53,7 @@ static int quote_arg(const char *s, Buf *b) {
     return bputc(b, '"');
 }
 
-static int quote_argv(int argc, char **argv, char *out, size_t outsz) {
+int quote_argv(int argc, char **argv, char *out, size_t outsz) {
     Buf b = { out, 0, outsz };
     out[0] = '\0';
     for (int i = 0; i < argc; i++) {
@@ -62,7 +63,7 @@ static int quote_argv(int argc, char **argv, char *out, size_t outsz) {
     return 0;
 }
 
-#ifndef TEST
+#ifndef NO_MAIN
 int main(int argc, char **argv) {
     char buf[BUFMAX];
     if (argc < 2) return 0;
@@ -72,80 +73,5 @@ int main(int argc, char **argv) {
     }
     puts(buf);
     return 0;
-}
-#endif
-
-#ifdef TEST
-#include <stdarg.h>
-
-static int passed, failed;
-
-static void check(const char *label, const char *got, const char *want) {
-    if (strcmp(got, want) == 0) {
-        passed++;
-    } else {
-        printf("FAIL: %s\n  got:  %s\n  want: %s\n", label, got, want);
-        failed++;
-    }
-}
-
-static void test_arg(const char *input, const char *want) {
-    char buf[BUFMAX];
-    Buf b = { buf, 0, sizeof(buf) };
-    buf[0] = '\0';
-    quote_arg(input, &b);
-    check(input, buf, want);
-}
-
-static void test_argv(const char *want, int argc, ...) {
-    char *argv[64];
-    va_list ap;
-    va_start(ap, argc);
-    for (int i = 0; i < argc; i++) argv[i] = va_arg(ap, char *);
-    va_end(ap);
-    char buf[BUFMAX];
-    quote_argv(argc, argv, buf, sizeof(buf));
-    check(want, buf, want);
-}
-
-int main(void) {
-    /* bare */
-    test_arg("echo",           "echo");
-    test_arg("foo@bar.com",    "foo@bar.com");
-    test_arg("/usr/bin/env",   "/usr/bin/env");
-    test_arg("key=value",      "key=value");
-    test_arg("some-flag_name", "some-flag_name");
-
-    /* single-quote wrapping */
-    test_arg("hello world",    "'hello world'");
-    test_arg("say \"hi\"",     "'say \"hi\"'");
-    test_arg("$HOME",          "'$HOME'");
-    test_arg("`date`",         "'`date`'");
-    test_arg("C:\\path",       "'C:\\path'");
-    test_arg("hello!",         "'hello!'");
-    test_arg("$var and spaces","'$var and spaces'");
-
-    /* double-quote wrapping: has ' but no shell-special */
-    test_arg("howdy' partner",     "\"howdy' partner\"");
-    test_arg("it's a \"test\"",    "\"it's a \\\"test\\\"\"");
-    test_arg("it's",               "\"it's\"");
-    test_arg("it's rockin'",       "\"it's rockin'\"");
-
-    /* double-quote wrapping: has ' and shell-special */
-    test_arg("it's $HOME",         "\"it's \\$HOME\"");
-    test_arg("it's `date`",        "\"it's \\`date\\`\"");
-    test_arg("it's C:\\path",      "\"it's C:\\\\path\"");
-    test_arg("it's great!",        "\"it's great\\!\"");
-
-    /* empty */
-    test_arg("", "''");
-
-    /* multi-arg */
-    test_argv("echo hello world",      3, "echo", "hello", "world");
-    test_argv("echo 'hello world'",    2, "echo", "hello world");
-    test_argv("echo \"howdy' partner\"", 2, "echo", "howdy' partner");
-
-    printf("%d passed, %d failed\n", passed, failed);
-    return failed ? 1 : 0;
 }
 #endif

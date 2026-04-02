@@ -1,3 +1,6 @@
 target
 squote
 squote_test
+bin-c
+bin-rust
+__pycache__

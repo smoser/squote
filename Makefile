@@ -13,7 +13,7 @@ bin-rust:
 squote_test: squote.c squote_test.c squote.h
 	$(CC) $(CFLAGS) -DNO_MAIN squote.c squote_test.c -o squote_test
 
-test: test-c test-python test-rust
+test: test-c test-python test-rust test-sh
 
 test-c: squote_test
 	./squote_test
@@ -24,8 +24,11 @@ test-python:
 test-rust:
 	cargo test
 
+test-sh:
+	python3 squote_test_sh.py
+
 clean:
 	rm -f bin-c bin-rust squote_test
 	cargo clean
 
-.PHONY: all test test-c test-python test-rust clean
+.PHONY: all test test-c test-python test-rust test-sh clean

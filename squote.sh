@@ -1,8 +1,9 @@
 squote() {
+    local buf="" c="" first="" out="" rest="" val=""
     _sq_quote_one() {
         case "$1" in
             '')
-                printf "''"
+                buf="${buf}''"
                 return
                 ;;
         esac
@@ -10,38 +11,39 @@ squote() {
             *[!a-zA-Z0-9@+:,./_-]*)
                 ;;
             *)
-                printf '%s' "$1"
+                buf="${buf}$1"
                 return
                 ;;
         esac
         case "$1" in
             *\'*)
                 # Has single quote: use double quotes, escape " $ ` \ !
-                _sq_out=''
-                _sq_rest="$1"
-                while [ -n "$_sq_rest" ]; do
-                    _sq_c="${_sq_rest%"${_sq_rest#?}"}"  # first char
-                    _sq_rest="${_sq_rest#?}"              # remainder
-                    case "$_sq_c" in
-                        [\"'$'"\`\\!"]) _sq_out="${_sq_out}\\${_sq_c}" ;;
-                        *)              _sq_out="${_sq_out}${_sq_c}" ;;
+                out=''
+                rest="$1"
+                while [ -n "$rest" ]; do
+                    c="${rest%"${rest#?}"}"  # first char
+                    rest="${rest#?}"              # remainder
+                    case "$c" in
+                        [\"'$'"\`\\!"]) out="${out}\\${c}" ;;
+                        *)              out="${out}${c}" ;;
                     esac
                 done
-                printf '"%s"' "$_sq_out"
+                buf="${buf}\"${out}\""
                 ;;
             *)
-                printf "'%s'" "$1"
+                buf="${buf}'$1'"
                 ;;
         esac
     }
 
-    case "$1" in --) shift ;; esac
+    [ "$1" = "--" ] && shift
 
-    _sq_first=1
-    for _sq_val in "$@"; do
-        [ "$_sq_first" = 1 ] || printf ' '
-        _sq_first=0
-        _sq_quote_one "$_sq_val"
+    buf=''
+    first=1
+    for val in "$@"; do
+        [ "$first" = 1 ] || buf="${buf} "
+        first=0
+        _sq_quote_one "$val"
     done
-    [ "$#" -gt 0 ] && printf '\n'
+    [ "$#" -gt 0 ] && printf '%s\n' "$buf"
 }

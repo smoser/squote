@@ -1,5 +1,5 @@
 squote() {
-    local buf="" c="" first="" out="" rest="" val=""
+    local buf="" c="" out="" rest="" val=""
     _sq_quote_one() {
         case "$1" in
             '')
@@ -39,11 +39,10 @@ squote() {
     [ "$1" = "--" ] && shift
 
     buf=''
-    first=1
     for val in "$@"; do
-        [ "$first" = 1 ] || buf="${buf} "
-        first=0
+        buf="$buf "
         _sq_quote_one "$val"
     done
+    buf=${buf# }
     [ "$#" -gt 0 ] && printf '%s\n' "$buf"
 }

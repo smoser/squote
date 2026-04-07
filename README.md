@@ -11,11 +11,25 @@ to represent an array in a way that can be given to shell.
     "Isn't this great?" Yes
 
     $ squote 'it\''s $HOME'
+    "it's \$HOME"
 
 It prefers double quotes to single quotes, and won't use either unless it
 is required.  The goal is to provide the command the way a human would type it.
+
+# building
+To build, type 'make all'.
 
 
 ## Notes
 1. '%' is not in 'safe-bare' set here because a bare '%1' can trigger job control.
 2. '=' in not in 'safe-bare' set because in zsh, bare =word triggers path expansion (equivalent to which word), so squote =ls would
+3. SQUOTE_PASSTHROUGH environment variable may be set to 'true' or 'false'.
+   If it is 'true', then squote will not consider any arguments as intended for it.
+
+       $ ./bin-rust --help
+       Usage: squote [--help] [--version] [--] [ARG...]
+       Quote ARGs for safe copy/paste into a shell.
+
+       $ SQUOTE_PASSTHROUGH=true ./bin-rust --help
+       --help
+

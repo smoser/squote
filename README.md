@@ -14,3 +14,8 @@ to represent an array in a way that can be given to shell.
 
 It prefers double quotes to single quotes, and won't use either unless it
 is required.  The goal is to provide the command the way a human would type it.
+
+
+## Notes
+1. '%' is not in 'safe-bare' set here because a bare '%1' can trigger job control.
+2. '=' in not in 'safe-bare' set because in zsh, bare =word triggers path expansion (equivalent to which word), so squote =ls would
